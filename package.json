@@ -1,0 +1,21 @@
+{
+  "name": "use-gulp-iconfont",
+  "version": "1.0.0",
+  "main": "gulpfile.js",
+  "license": "MIT",
+  "dependencies": {
+    "gulp": "^4.0.2"
+  },
+  "scripts": {
+    "build": "gulp"
+  },
+  "devDependencies": {
+    "gulp-clean": "^0.4.0",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-iconfont": "^11.0.1",
+    "gulp-iconfont-css": "^3.0.0",
+    "gulp-imagemin": "7.1.0",
+    "gulp-svg-sprite": "^2.0.3",
+    "hash-files": "^1.1.1"
+  }
+}
