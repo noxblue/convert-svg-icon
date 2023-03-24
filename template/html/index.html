@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IconFontDemo</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="../../tanji_fonts/css/tanji_icons.css"
+    />
+  </head>
+  <body>
+    <div id="app"></div>
+    <div style="display: flex; flex-wrap: wrap">
+      <% _.each(glyphs, function(glyph) { %>
+      <div
+        style="
+          display: flex;
+          flex-direction: column;
+          width: 50%;
+          border: #4e4e4e 1px solid;
+          box-sizing: border-box;
+        "
+      >
+        <i
+          class="<%= cssClass %>-<%= glyph.name %>"
+          style="color: #4e4e4e; font-size: 40px"
+        ></i>
+        <span>class-name：<%= cssClass %>-<%= glyph.name %> </span>
+      </div>
+      <% }); %>
+    </div>
+  </body>
+</html>
