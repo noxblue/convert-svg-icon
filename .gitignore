@@ -1,6 +1,8 @@
 .DS_Store
 .idea/
 .vscode/
+
 node_modules/
-tanji_fonts/
-svg-hash.md
+assets/
+dist/
+.env

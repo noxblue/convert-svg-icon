@@ -11,6 +11,7 @@
     "next": "echo 'this is the next job.'"
   },
   "devDependencies": {
+    "dotenv": "^16.0.3",
     "gulp-clean": "^0.4.0",
     "gulp-clean-css": "^4.3.0",
     "gulp-consolidate": "^0.2.0",

@@ -1,5 +1,8 @@
+const dotenv = require("dotenv");
+dotenv.config();
 const { src, series, dest, parallel } = require("gulp");
 const fs = require("fs");
+const path = require("path");
 const clean = require("gulp-clean");
 const hashFiles = require("hash-files");
 const imagemin = require("gulp-imagemin");
@@ -11,21 +14,35 @@ const svgSprite = require("gulp-svg-sprite");
 const cleanCSS = require("gulp-clean-css");
 
 const runTimestamp = Math.round(Date.now() / 1000);
+function resolvePath(dir) {
+  return path.join(__dirname, dir);
+}
+// you can set variable: "PREFIX, ASSETS_DIR, TARGET_DIR, ICON_WITHOUT_COLOR_DIR, ICON_WITH_COLOR_DIR" at .env file
+const ASSETS_DIR = resolvePath(process.env.ASSETS_DIR || "assets");
+const ICON_WITHOUT_COLOR_DIR = process.env.ICON_WITHOUT_COLOR_DIR
+  ? resolvePath(process.env.ICON_WITHOUT_COLOR_DIR)
+  : `${ASSETS_DIR}/icons`;
+const ICON_WITH_COLOR_DIR = process.env.ICON_WITH_COLOR_DIR
+  ? resolvePath(process.env.ICON_WITH_COLOR_DIR)
+  : `${ASSETS_DIR}/svgs`;
+const TARGET_DIR = resolvePath(process.env.TARGET_DIR || "dist");
+const PREFIX = process.env.PREFIX || "iconfont";
 
-const ASSETS_DIR = "assets";
-const TARGET_DIR = "tanji_fonts";
-const CSS_DIR = `${TARGET_DIR}/css`;
-const FONTS_DIR = `${TARGET_DIR}/fonts`;
-const SPRITE_DIR = `${TARGET_DIR}/sprites`;
-const DEMO_DIR = `${TARGET_DIR}/demo`;
+// relative targetDir
+const CSS_DIR = "css";
+const FONTS_DIR = "fonts";
+const SPRITE_DIR = "sprites";
+const DEMO_DIR = "demo";
+const HASH_FILE_DIR = TARGET_DIR;
 
-const cssName = "tanji_icons.css";
-const fontName = "tanji_icons";
-const cssClassName = "tanji_icons";
-const spriteName = "tanji_color_svgs_sprite.svg";
-const fontsDemoName = "fonts_demo";
-const spriteDemoName = "sprites_demo.html";
+const fontName = `${PREFIX}_icons`;
+const cssClassName = `${PREFIX}_icons`;
+const cssFileName = `${PREFIX}_icons.css`;
+const spriteFileName = `${PREFIX}_color_svgs_sprite.svg`;
+const fontsDemoFileName = "fonts_demo";
+const spriteDemoFileName = "sprites_demo.html";
 const hashFileName = "svg-hash.md";
+const hashFile = path.join(HASH_FILE_DIR, hashFileName);
 
 function cleanFile(filePath) {
   console.log("clean", filePath);
@@ -38,23 +55,24 @@ function initGenerate() {
   return cleanFile(TARGET_DIR);
 }
 
-function checkHashAndFile() {
+async function checkHashAndFile() {
   const currentHash = hashFiles.sync({
     files: `${ASSETS_DIR}/*/*.*`,
     algorithm: "sha1",
   });
-  const prevHash = fs.existsSync(hashFileName)
-    ? fs.readFileSync(hashFileName, "utf8")
+  const prevHash = fs.existsSync(hashFile)
+    ? fs.readFileSync(hashFile, "utf8")
     : "";
+  console.log("currentHash", currentHash, "prevHash", prevHash);
   let exists = true;
   try {
-    fs.accessSync(hashFileName);
-    fs.accessSync(`${CSS_DIR}/${cssName}`);
-    fs.accessSync(`${FONTS_DIR}/${fontName}.eot`);
-    fs.accessSync(`${FONTS_DIR}/${fontName}.ttf`);
-    fs.accessSync(`${FONTS_DIR}/${fontName}.woff`);
-    fs.accessSync(`${FONTS_DIR}/${fontName}.woff2`);
-    fs.accessSync(`${SPRITE_DIR}/${spriteName}`);
+    fs.accessSync(hashFile);
+    fs.accessSync(path.join(CSS_DIR, cssFileName));
+    fs.accessSync(path.join(FONTS_DIR, `${fontName}.eot`));
+    fs.accessSync(path.join(FONTS_DIR, `${fontName}.ttf`));
+    fs.accessSync(path.join(FONTS_DIR, `${fontName}.woff`));
+    fs.accessSync(path.join(FONTS_DIR, `${fontName}.woff2`));
+    fs.accessSync(path.join(SPRITE_DIR, spriteFileName));
   } catch (err) {
     exists = false;
   }
@@ -63,16 +81,18 @@ function checkHashAndFile() {
     return Promise.reject(new Error("Same hash and files, process stoped"));
   } else {
     console.log("Files has change or not exist. Writing svg-hash.md file.");
-    fs.writeFileSync(hashFileName, currentHash);
+    // await initGenerate();
+    fs.mkdirSync(HASH_FILE_DIR, { recursive: true });
+    fs.writeFileSync(hashFile, currentHash);
     return Promise.resolve();
   }
 }
 
 function createFontsAndCss() {
-  const hash = fs.existsSync(hashFileName)
-    ? fs.readFileSync(hashFileName, "utf8").substring(0, 8)
+  const hash = fs.existsSync(hashFile)
+    ? fs.readFileSync(hashFile, "utf8").substring(0, 8)
     : "";
-  return src(`${ASSETS_DIR}/icons/*.svg`)
+  return src(path.join(ICON_WITHOUT_COLOR_DIR, "*.svg"))
     .pipe(
       imagemin([
         imagemin.svgo({
@@ -93,9 +113,9 @@ function createFontsAndCss() {
       iconfontCSS({
         path: "template/css/_icons.css",
         fontName: fontName,
-        targetPath: `../css/${cssName}`,
-        fontPath: "../fonts/",
-        cssClass: `${cssClassName}`,
+        targetPath: `../${path.join(CSS_DIR, cssFileName)}`,
+        fontPath: `../${FONTS_DIR}/`,
+        cssClass: cssClassName,
         cacheBuster: hash,
       })
     )
@@ -115,32 +135,33 @@ function createFontsAndCss() {
         .pipe(
           consolidate("lodash", {
             glyphs,
+            cssDir: `../${CSS_DIR}`,
+            cssFileName: cssFileName,
             fontName: fontName,
-            cssClass: `${cssClassName}`,
+            cssClass: cssClassName,
           })
         )
         .pipe(
           rename(function (path) {
             // console.log("path", path);
-            path.basename = `${fontsDemoName}`;
+            path.basename = fontsDemoFileName;
             path.extname = ".html";
           })
         )
-        .pipe(dest(`${DEMO_DIR}/`));
+        .pipe(dest(path.join(TARGET_DIR, DEMO_DIR)));
 
       // CSS templating, e.g.
       // console.log(glyphs, options);
     })
-    .pipe(dest(`${FONTS_DIR}/`))
+    .pipe(dest(path.join(TARGET_DIR, FONTS_DIR)))
     .on("finish", function () {
       console.log("minifyCss");
-      src(`${CSS_DIR}/${fontName}.css`)
-        .pipe(cleanCSS())
-        .pipe(dest(`${CSS_DIR}/`));
+      const cssPath = path.join(TARGET_DIR, CSS_DIR);
+      src(path.join(cssPath, cssFileName)).pipe(cleanCSS()).pipe(dest(cssPath));
     });
 }
 function createSvgSprite() {
-  return src(`${ASSETS_DIR}/svgs/*.svg`)
+  return src(path.join(ICON_WITH_COLOR_DIR, "*.svg"))
     .pipe(
       imagemin([
         imagemin.svgo({
@@ -160,20 +181,20 @@ function createSvgSprite() {
           symbol: {
             prefix: `.${fontName}-%s`,
             dimensions: true,
-            sprite: `./${spriteName}`,
-            dest: `./`,
+            sprite: path.join(SPRITE_DIR, spriteFileName),
+            dest: "./",
             example: {
-              dest: `../demo/${spriteDemoName}`,
+              dest: path.join(DEMO_DIR, spriteDemoFileName),
             },
           },
         },
       })
     )
-    .pipe(dest(`${SPRITE_DIR}/`));
+    .pipe(dest(TARGET_DIR));
 }
 
 exports.default = series(
   checkHashAndFile,
-  initGenerate,
+  // initGenerate,
   parallel(createFontsAndCss, createSvgSprite)
 );
