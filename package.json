@@ -12,7 +12,7 @@
   },
   "devDependencies": {
     "dotenv": "^16.0.3",
-    "gulp-clean": "^0.4.0",
+    "fs-extra": "^11.1.1",
     "gulp-clean-css": "^4.3.0",
     "gulp-consolidate": "^0.2.0",
     "gulp-iconfont": "^11.0.1",
