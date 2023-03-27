@@ -1,14 +1,17 @@
+process.on("uncaughtException", function () {
+  console.log("Caught exception");
+});
 const dotenv = require("dotenv");
 dotenv.config();
 const { src, series, dest, parallel } = require("gulp");
 const fs = require("fs");
 const fse = require("fs-extra");
 const path = require("path");
-const clean = require("gulp-clean");
+// const clean = require("gulp-clean");
 const hashFiles = require("hash-files");
 const imagemin = require("gulp-imagemin");
 const iconfont = require("gulp-iconfont");
-const iconfontCSS = require("gulp-iconfont-css");
+// const iconfontCSS = require("gulp-iconfont-css");
 const consolidate = require("gulp-consolidate");
 const rename = require("gulp-rename");
 const svgSprite = require("gulp-svg-sprite");
@@ -263,9 +266,18 @@ function minifyCss() {
     .pipe(cleanCSS())
     .pipe(dest(TARGET_CSS_DIR));
 }
-exports.default = series(
-  checkHashAndFile,
-  parallel(createFontsAndCss, createSvgSprite),
-  minifyCss,
-  moveFileToTarget
-);
+// exports.default = series(
+//   checkHashAndFile,
+//   parallel(createFontsAndCss, createSvgSprite),
+//   minifyCss,
+//   moveFileToTarget
+// );
+
+module.exports = {
+  generateFonts: series(
+    checkHashAndFile,
+    parallel(createFontsAndCss, createSvgSprite),
+    minifyCss,
+    moveFileToTarget
+  )
+};

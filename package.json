@@ -7,7 +7,7 @@
     "gulp": "^4.0.2"
   },
   "scripts": {
-    "build": "gulp ; yarn next",
+    "build": "node index.js && yarn next",
     "next": "echo 'this is the next job.'"
   },
   "devDependencies": {
