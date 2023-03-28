@@ -1,3 +1,44 @@
+/*
+all options:
+options = {
+  // Defaults
+  PREFIX: PrefixName:String || "g_fonts",
+  FONT_NAME: FontName:String || `${PRIFIX}_icons`,
+  CSS_CLASS_NAME: ClassName:String || `${PREFIX}_icons`,
+
+  // File Names
+  CSS_TEMPLATE_NAME: CssTemplateFileName || "_icons.css",
+  CSS_FILE_NAME: CssFileName || `${PREFIX}${CSS_TEMPLATE_NAME}`,
+  HTML_DEMO_TEMPLATE_NAME: FontsHtmlDemoTemplateFileName:String || "fonts_demo.html",
+  FONTS_DEMO_FILE_NAME: FontsHtmlDemoFileName:String || HTML_DEMO_TEMPLATE_NAME,
+  SPRITE_FILE_NAME: SpriteFileName:String || `${PREFIX}_color_svgs_sprite.svg`,
+  SPRITE_DEMO_FILE_NAME: SpriteDemoFileName:String || "sprites_demo.html",
+  HASH_FILE_NAME: HashFileName:String || "svg-hash.md",
+
+  // Folder Names
+  DEFAULT_FOLDER_NAME: FolderName:String || "g_fonts",
+  ASSETS_DIR: AssetsPath:String || "assets",
+
+  // Dictionary Path
+  ICON_WITHOUT_COLOR_DIR: SvgsToFontsFileFolder:String || `${ASSETS_DIR}/icons`,
+  ICON_WITH_COLOR_DIR: SvgsToSpriteFileFolder:String || `${ASSETS_DIR}/svgs`,
+  CSS_TEMPLATE_DIR: FontCssTemplateFolder:String || "template/css",
+  HTML_DEMO_TEMPLATE_DIR: FontDemoHtmlTemplateFolder:String || "template/html",
+  TARGET_CSS_DIR: PlaceTheFontCssFolder:String || `${DEFAULT_DIR}/css`,
+  TARGET_FONTS_DIR: PlaceTheFontsFolder:String || `${DEFAULT_DIR}/fonts`,
+  TARGET_SPRITE_DIR: PlaceTheSpriteSvgFolder:String || `${DEFAULT_DIR}/sprites`
+};
+
+REQUIRE to setting:
+ICON_WITHOUT_COLOR_DIR: Need find where's the fonts source svgs.
+ICON_WITH_COLOR_DIR: Need find where's the sprite source svgs.
+TARGET_CSS_DIR, TARGET_FONTS_DIR, TARGET_SPRITE_DIR: Tell us where's files should place?
+
+ADVICE to setting:
+PREFIX,FONT_NAME,CSS_CLASS_NAME,CSS_FILE_NAME: Let File and Names more Customize.
+DEFAULT_FOLDER_NAME: Easy to find the Demo htmls.
+*/
+
 // exit without code !0, for continue next node job.
 process.on("uncaughtException", function () {
   console.log("=== Generate of Fonts and Sprite are stopped ===");
@@ -20,9 +61,12 @@ const svgSprite = require("gulp-svg-sprite");
 const cleanCSS = require("gulp-clean-css");
 
 const runTimestamp = Math.round(Date.now() / 1000);
+
+const BASE_DIR = process.cwd();
 function resolvePath(dir) {
-  return path.join(__dirname, dir);
+  return path.join(BASE_DIR, dir);
 }
+
 // store parameters
 let passedOptions = {};
 let modifiedOptions = {};
@@ -85,6 +129,9 @@ function createFontsAndCss() {
   const {
     DEFAULT_DIR,
     ICON_WITHOUT_COLOR_DIR,
+    CSS_TEMPLATE_DIR,
+    HTML_DEMO_TEMPLATE_DIR,
+    DEMO_HTML_CSS_SRC_DIR,
     CSS_FONTS_SRC_DIR,
     TARGET_CSS_DIR,
     hashFile,
@@ -93,7 +140,6 @@ function createFontsAndCss() {
     cssClassName,
     fontsDemoFileName,
     defaultFontsFolerName,
-    defaultCssFolderName,
     defaultDemoFolderName,
   } = modifiedOptions;
   const hash = fs.existsSync(hashFile)
@@ -129,30 +175,22 @@ function createFontsAndCss() {
     .on("glyphs", function (glyphs, options) {
       // generate fonts demo html
       console.log("generate fonts demo html");
-      src("template/html/index.html")
+      src(HTML_DEMO_TEMPLATE_DIR)
         .pipe(
           consolidate("lodash", {
             glyphs,
-            cssDir: passedOptions.TARGET_CSS_DIR
-              ? `../../${passedOptions.TARGET_CSS_DIR}`
-              : `../${defaultCssFolderName}`,
+            cssDir: DEMO_HTML_CSS_SRC_DIR,
             cssFileName: cssFileName,
             fontName: fontName,
             cssClass: cssClassName,
           })
         )
-        .pipe(
-          rename(function (path) {
-            // console.log("path", path);
-            path.basename = fontsDemoFileName;
-            path.extname = ".html";
-          })
-        )
+        .pipe(rename(fontsDemoFileName))
         .pipe(dest(path.join(DEFAULT_DIR, defaultDemoFolderName)));
       // CSS templating, e.g.
       // console.log(glyphs, options);
       console.log("generate css");
-      src("template/css/_icons.css")
+      src(CSS_TEMPLATE_DIR)
         .pipe(
           consolidate("lodash", {
             glyphs: glyphs.map(mapGlyphs),
@@ -246,11 +284,18 @@ function moveFileToTarget() {
   return Promise.resolve();
 }
 function moveFiles(srcDir, targetDir) {
+  const { DEFAULT_DIR, defaultDemoFolderName, fontsDemoFileName, cssFileName } =
+    modifiedOptions;
   if (!fs.existsSync(targetDir)) {
     fs.mkdirSync(targetDir, { recursive: true });
   }
   fse.copySync(srcDir, targetDir);
   fse.removeSync(srcDir);
+  if (cssFileName.split(".")[1] !== "css") {
+    fse.removeSync(
+      path.join(DEFAULT_DIR, defaultDemoFolderName, fontsDemoFileName)
+    );
+  }
 }
 function minifyCss() {
   const { TARGET_CSS_DIR, cssFileName } = modifiedOptions;
@@ -266,41 +311,72 @@ function minifyCss() {
 // );
 
 //setting options by parameters
-function setOptions(option) {
-  // console.log("option", option);
+function setOptions(options) {
+  // console.log("options", options);
+  // defaults
   const cb = {
-    defaultFolderName: option.DEFAULT_FOLDER_NAME || "g_fonts",
+    defaultFolderName: options.DEFAULT_FOLDER_NAME || "g_fonts",
     defaultCssFolderName: "css",
     defaultFontsFolerName: "fonts",
     defaultSpriteFolderName: "sprites",
     defaultDemoFolderName: "demo",
-    ASSETS_DIR: resolvePath(option.ASSETS_DIR || "assets"),
+    ASSETS_DIR: resolvePath(options.ASSETS_DIR || "assets"),
+    PREFIX: options.PREFIX || "g_fonts",
   };
-
   cb.DEFAULT_DIR = resolvePath(cb.defaultFolderName);
-  cb.ICON_WITHOUT_COLOR_DIR = option.ICON_WITHOUT_COLOR_DIR
-    ? resolvePath(option.ICON_WITHOUT_COLOR_DIR)
+
+  // names
+  cb.fontName = options.FONT_NAME || `${cb.PREFIX}_icons`;
+  cb.cssClassName = options.CSS_CLASS_NAME || `${cb.PREFIX}_icons`;
+
+  cb.CSS_TEMPLATE_NAME = options.CSS_TEMPLATE_NAME || "_icons.css";
+  cb.cssFileName =
+    options.CSS_FILE_NAME || `${cb.PREFIX}${cb.CSS_TEMPLATE_NAME}`;
+
+  cb.HTML_DEMO_TEMPLATE_NAME =
+    options.HTML_DEMO_TEMPLATE_NAME || "fonts_demo.html";
+  cb.fontsDemoFileName =
+    options.FONTS_DEMO_FILE_NAME || cb.HTML_DEMO_TEMPLATE_NAME;
+
+  cb.spriteFileName =
+    options.SPRITE_FILE_NAME || `${cb.PREFIX}_color_svgs_sprite.svg`;
+  cb.spriteDemoFileName = options.SPRITE_DEMO_FILE_NAME || "sprites_demo.html";
+
+  cb.hashFileName = options.HASH_FILE_NAME || "svg-hash.md";
+  cb.hashFile = path.join(cb.DEFAULT_DIR, cb.hashFileName);
+
+  //DIRs
+  cb.ICON_WITHOUT_COLOR_DIR = options.ICON_WITHOUT_COLOR_DIR
+    ? resolvePath(options.ICON_WITHOUT_COLOR_DIR)
     : path.join(cb.ASSETS_DIR, "icons");
-  cb.ICON_WITH_COLOR_DIR = option.ICON_WITH_COLOR_DIR
-    ? resolvePath(option.ICON_WITH_COLOR_DIR)
+  cb.ICON_WITH_COLOR_DIR = options.ICON_WITH_COLOR_DIR
+    ? resolvePath(options.ICON_WITH_COLOR_DIR)
     : path.join(cb.ASSETS_DIR, "svgs");
 
-  cb.TARGET_CSS_DIR = option.TARGET_CSS_DIR
-    ? resolvePath(option.TARGET_CSS_DIR)
+  cb.CSS_TEMPLATE_DIR = options.CSS_TEMPLATE_DIR
+    ? resolvePath(path.join(options.CSS_TEMPLATE_DIR, cb.CSS_TEMPLATE_NAME))
+    : resolvePath(path.join("template/css", cb.CSS_TEMPLATE_NAME));
+  cb.HTML_DEMO_TEMPLATE_DIR = options.HTML_DEMO_TEMPLATE_DIR
+    ? resolvePath(
+        path.join(options.HTML_DEMO_TEMPLATE_DIR, cb.HTML_DEMO_TEMPLATE_NAME)
+      )
+    : resolvePath(path.join("template/html", cb.HTML_DEMO_TEMPLATE_NAME));
+  cb.TARGET_CSS_DIR = options.TARGET_CSS_DIR
+    ? resolvePath(options.TARGET_CSS_DIR)
     : path.join(cb.DEFAULT_DIR, cb.defaultCssFolderName);
-  cb.TARGET_FONTS_DIR = option.TARGET_FONTS_DIR
-    ? resolvePath(option.TARGET_FONTS_DIR)
+  cb.TARGET_FONTS_DIR = options.TARGET_FONTS_DIR
+    ? resolvePath(options.TARGET_FONTS_DIR)
     : path.join(cb.DEFAULT_DIR, cb.defaultFontsFolerName);
-  cb.TARGET_SPRITE_DIR = option.TARGET_SPRITE_DIR
-    ? resolvePath(option.TARGET_SPRITE_DIR)
+  cb.TARGET_SPRITE_DIR = options.TARGET_SPRITE_DIR
+    ? resolvePath(options.TARGET_SPRITE_DIR)
     : path.join(cb.DEFAULT_DIR, cb.defaultSpriteFolderName);
 
   const getCssFontsSrc = () => {
     const cssDir =
-      option.TARGET_CSS_DIR ||
+      options.TARGET_CSS_DIR ||
       path.join(cb.defaultFolderName, cb.defaultCssFolderName);
     const fontsDir =
-      option.TARGET_FONTS_DIR ||
+      options.TARGET_FONTS_DIR ||
       path.join(cb.defaultFolderName, cb.defaultFontsFolerName);
     const rawDirArray = cssDir.split("/");
 
@@ -312,18 +388,15 @@ function setOptions(option) {
   };
   cb.CSS_FONTS_SRC_DIR = getCssFontsSrc();
 
-  // names
-  cb.PREFIX = option.PREFIX || "g_fonts";
-  cb.fontName = option.FONT_NAME || `${cb.PREFIX}_icons`;
-  cb.cssClassName = option.CSS_CLASS_NAME || `${cb.PREFIX}_icons`;
-  cb.cssFileName = option.CSS_FILE_NAME || `${cb.PREFIX}_icons.css`;
-  cb.spriteFileName =
-    cb.SPRITE_FILE_NAME || `${cb.PREFIX}_color_svgs_sprite.svg`;
-  cb.fontsDemoFileName = cb.FONTS_DEMO_FILE_NAME || "fonts_demo";
-  cb.spriteDemoFileName = cb.SPRITE_DEMO_FILE_NAME || "sprites_demo.html";
-  cb.hashFileName = cb.HASH_FILE_NAME || "svg-hash.md";
+  // demo dir is always fixed, bug we need to know where is the css file.
+  const getDemoHtmlCssSrc = () => {
+    const cssDir =
+      options.TARGET_CSS_DIR ||
+      path.join(cb.defaultFolderName, cb.defaultCssFolderName);
+    return `../../${cssDir}`;
+  };
+  cb.DEMO_HTML_CSS_SRC_DIR = getDemoHtmlCssSrc();
 
-  cb.hashFile = path.join(cb.DEFAULT_DIR, cb.hashFileName);
   return cb;
 }
 

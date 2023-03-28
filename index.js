@@ -1,4 +1,4 @@
-const { generateFonts } = require("./gulpfile.js");
+const { generateFonts } = require("./src/index.js");
 // process.on("uncaughtException", function () {
 //   console.log("Caught exception");
 // });
@@ -18,13 +18,30 @@ const { generateFonts } = require("./gulpfile.js");
 //     console.log("Generate Complete!");
 //   }
 // });
-generateFonts({
-  // PREFIX: "g_fonts",
-  // ASSETS_DIR: "assets",
-  // TARGET_CSS_DIR: "src/css/font",
-  // TARGET_FONTS_DIR: "src/assets/fonts",
-  // TARGET_SPRITE_DIR: "src/images/sprites",
-})
-  .then((res) => {
-    console.log("res", res);
-  });
+const cssOptions = {
+  PREFIX: "good_fonts",
+  ICON_WITHOUT_COLOR_DIR: "assets/icons",
+  ICON_WITH_COLOR_DIR: "assets/svgs",
+  TARGET_CSS_DIR: "dist/css/font",
+  TARGET_FONTS_DIR: "dist/assets/fonts",
+  TARGET_SPRITE_DIR: "dist/images/sprites",
+  FONT_NAME: "good_fonts",
+  CSS_CLASS_NAME: "is_good_icon",
+  CSS_FILE_NAME: "is_good_icon.css",
+};
+const scssOptions = {
+  PREFIX: "good_fonts",
+  ICON_WITHOUT_COLOR_DIR: "assets/icons",
+  ICON_WITH_COLOR_DIR: "assets/svgs",
+  TARGET_CSS_DIR: "dist/css/font",
+  TARGET_FONTS_DIR: "dist/assets/fonts",
+  TARGET_SPRITE_DIR: "dist/images/sprites",
+  FONT_NAME: "good_fonts",
+  CSS_CLASS_NAME: "is_good_icon",
+  CSS_TEMPLATE_NAME: "_icons.scss",
+  CSS_FILE_NAME: "is_good_icon.scss",
+  DEFAULT_FOLDER_NAME: "G_G_Fonts",
+};
+generateFonts({ ...cssOptions }).then((res) => {
+  console.log("res", res);
+});
