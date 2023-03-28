@@ -1068,13 +1068,6 @@ console-stream@^0.1.1:
   resolved "https://registry.yarnpkg.com/console-stream/-/console-stream-0.1.1.tgz#a095fe07b20465955f2fafd28b5d72bccd949d44"
   integrity sha512-QC/8l9e6ofi6nqZ5PawlDgzmMw3OxIXtvolBzap/F4UDBJlDaZRSNbL/lb41C29FcbSJncBFlJFj2WJoNyZRfQ==
 
-consolidate@^0.15.1:
-  version "0.15.1"
-  resolved "https://registry.yarnpkg.com/consolidate/-/consolidate-0.15.1.tgz#21ab043235c71a07d45d9aad98593b0dba56bab7"
-  integrity sha512-DW46nrsMJgy9kqAbPt5rKaCr7uFtpo4mSUvLHIUbJEjm0vo+aY5QLwBUq3FK4tRnJr/X0Psc0C4jf/h+HtXSMw==
-  dependencies:
-    bluebird "^3.1.1"
-
 consolidate@~0.14.0:
   version "0.14.5"
   resolved "https://registry.yarnpkg.com/consolidate/-/consolidate-0.14.5.tgz#5a25047bc76f73072667c8cb52c989888f494c63"
@@ -2427,16 +2420,6 @@ gulp-consolidate@^0.2.0:
     consolidate "~0.14.0"
     map-stream "0.0.4"
 
-gulp-iconfont-css@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/gulp-iconfont-css/-/gulp-iconfont-css-3.0.0.tgz#32012016b3bb60d9d766354068e84f07ccbf6b42"
-  integrity sha512-YrzYbw74gZQysc/TPbZApKDoq5zDn+SXVpvKNHWcuBO/C3QZ3Ves9EraeqHOSnevDTySYWnIwVtmYForjQu98w==
-  dependencies:
-    consolidate "^0.15.1"
-    lodash "^4.17.11"
-    plugin-error "^1.0.1"
-    vinyl "^2.2.0"
-
 gulp-iconfont@^11.0.1:
   version "11.0.1"
   resolved "https://registry.yarnpkg.com/gulp-iconfont/-/gulp-iconfont-11.0.1.tgz#4080f1bc105c5194e30c34a764764cd689bdc173"
@@ -3560,7 +3543,7 @@ lodash.trimstart@^4.5.1:
   resolved "https://registry.yarnpkg.com/lodash.trimstart/-/lodash.trimstart-4.5.1.tgz#8ff4dec532d82486af59573c39445914e944a7f1"
   integrity sha512-b/+D6La8tU76L/61/aN0jULWHkT0EeJCmVstPBn/K9MtD2qBW83AsBNrr63dKuWYwVMO7ucv13QNO/Ek/2RKaQ==
 
-lodash@^4.17.10, lodash@^4.17.11:
+lodash@^4.17.10:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==

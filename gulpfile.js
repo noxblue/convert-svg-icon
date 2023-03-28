@@ -1,17 +1,19 @@
+// exit without code !0, for continue next node job.
 process.on("uncaughtException", function () {
-  console.log("Caught exception");
+  console.log("=== Generate of Fonts and Sprite are stopped ===");
+  console.log("=== Countinue Next Jobs ===");
+  return false;
 });
+
 const dotenv = require("dotenv");
 dotenv.config();
 const { src, series, dest, parallel } = require("gulp");
 const fs = require("fs");
 const fse = require("fs-extra");
 const path = require("path");
-// const clean = require("gulp-clean");
 const hashFiles = require("hash-files");
 const imagemin = require("gulp-imagemin");
 const iconfont = require("gulp-iconfont");
-// const iconfontCSS = require("gulp-iconfont-css");
 const consolidate = require("gulp-consolidate");
 const rename = require("gulp-rename");
 const svgSprite = require("gulp-svg-sprite");
@@ -21,74 +23,33 @@ const runTimestamp = Math.round(Date.now() / 1000);
 function resolvePath(dir) {
   return path.join(__dirname, dir);
 }
-// Set Path and Variable at .env file
-
-// FolderNames
-const defaultFolderName = process.env.DEFAULT_FOLDER_NAME || "g_iconfont";
-const defaultCssFolderName = "css";
-const defaultFontsFolerName = "fonts";
-const defaultSpriteFolderName = "sprites";
-const defaultDemoFolderName = "demo";
-
-// DIRs
-const ASSETS_DIR = resolvePath(process.env.ASSETS_DIR || "assets");
-const ICON_WITHOUT_COLOR_DIR = process.env.ICON_WITHOUT_COLOR_DIR
-  ? resolvePath(process.env.ICON_WITHOUT_COLOR_DIR)
-  : path.join(ASSETS_DIR, "icons");
-const ICON_WITH_COLOR_DIR = process.env.ICON_WITH_COLOR_DIR
-  ? resolvePath(process.env.ICON_WITH_COLOR_DIR)
-  : path.join(ASSETS_DIR, "svgs");
-
-const DEFAULT_DIR = resolvePath(defaultFolderName);
-const TARGET_CSS_DIR = process.env.TARGET_CSS_DIR
-  ? resolvePath(process.env.TARGET_CSS_DIR)
-  : path.join(DEFAULT_DIR, defaultCssFolderName);
-const TARGET_FONTS_DIR = process.env.TARGET_FONTS_DIR
-  ? resolvePath(process.env.TARGET_FONTS_DIR)
-  : path.join(DEFAULT_DIR, defaultFontsFolerName);
-const TARGET_SPRITE_DIR = process.env.TARGET_SPRITE_DIR
-  ? resolvePath(process.env.TARGET_SPRITE_DIR)
-  : path.join(DEFAULT_DIR, defaultSpriteFolderName);
-
-function getCssFontsSrc() {
-  const cssDir =
-    process.env.TARGET_CSS_DIR ||
-    path.join(defaultFolderName, defaultCssFolderName);
-  const fontsDir =
-    process.env.TARGET_FONTS_DIR ||
-    path.join(defaultFolderName, defaultFontsFolerName);
-  const rawDirArray = cssDir.split("/");
-
-  let prevPath = "";
-  for (let i = 0; i < rawDirArray.length; i++) {
-    prevPath = prevPath + "../";
-  }
-  const fontsSourcePath = `${prevPath}${fontsDir}/`;
-  return fontsSourcePath;
-}
-const CSS_FONTS_SRC_DIR = getCssFontsSrc();
-
-// names
-const PREFIX = process.env.PREFIX || "iconfont";
-
-const fontName = process.env.FONT_NAME || `${PREFIX}_icons`;
-const cssClassName = process.env.CSS_CLASS_NAME || `${PREFIX}_icons`;
-
-const cssFileName = process.env.CSS_FILE_NAME || `${PREFIX}_icons.css`;
-const spriteFileName =
-  process.env.SPRITE_FILE_NAME || `${PREFIX}_color_svgs_sprite.svg`;
-const fontsDemoFileName = process.env.FONTS_DEMO_FILE_NAME || "fonts_demo";
-const spriteDemoFileName =
-  process.env.SPRITE_DEMO_FILE_NAME || "sprites_demo.html";
-const hashFileName = process.env.HASH_FILE_NAME || "svg-hash.md";
-
-const hashFile = path.join(DEFAULT_DIR, hashFileName);
+// store parameters
+let passedOptions = {};
+let modifiedOptions = {};
 
 async function checkHashAndFile() {
-  const currentHash = hashFiles.sync({
-    files: `${ASSETS_DIR}/*/*.*`,
+  const {
+    DEFAULT_DIR,
+    ICON_WITHOUT_COLOR_DIR,
+    ICON_WITH_COLOR_DIR,
+    TARGET_CSS_DIR,
+    TARGET_FONTS_DIR,
+    TARGET_SPRITE_DIR,
+    hashFile,
+    cssFileName,
+    fontName,
+    spriteFileName,
+    defaultFontsFolerName,
+  } = modifiedOptions;
+  const fontsHash = hashFiles.sync({
+    files: `${ICON_WITHOUT_COLOR_DIR}/*/**`,
     algorithm: "sha1",
   });
+  const svgsHash = hashFiles.sync({
+    files: `${ICON_WITH_COLOR_DIR}/*/**`,
+    algorithm: "sha1",
+  });
+  const currentHash = fontsHash + svgsHash;
   const prevHash = fs.existsSync(hashFile)
     ? fs.readFileSync(hashFile, "utf8")
     : "";
@@ -121,6 +82,20 @@ async function checkHashAndFile() {
 }
 
 function createFontsAndCss() {
+  const {
+    DEFAULT_DIR,
+    ICON_WITHOUT_COLOR_DIR,
+    CSS_FONTS_SRC_DIR,
+    TARGET_CSS_DIR,
+    hashFile,
+    fontName,
+    cssFileName,
+    cssClassName,
+    fontsDemoFileName,
+    defaultFontsFolerName,
+    defaultCssFolderName,
+    defaultDemoFolderName,
+  } = modifiedOptions;
   const hash = fs.existsSync(hashFile)
     ? fs.readFileSync(hashFile, "utf8").substring(0, 8)
     : "";
@@ -158,8 +133,8 @@ function createFontsAndCss() {
         .pipe(
           consolidate("lodash", {
             glyphs,
-            cssDir: process.env.TARGET_CSS_DIR
-              ? `../../${process.env.TARGET_CSS_DIR}`
+            cssDir: passedOptions.TARGET_CSS_DIR
+              ? `../../${passedOptions.TARGET_CSS_DIR}`
               : `../${defaultCssFolderName}`,
             cssFileName: cssFileName,
             fontName: fontName,
@@ -210,6 +185,15 @@ function mapGlyphs(glyph) {
 }
 
 function createSvgSprite() {
+  const {
+    ICON_WITH_COLOR_DIR,
+    DEFAULT_DIR,
+    fontName,
+    defaultSpriteFolderName,
+    spriteFileName,
+    defaultDemoFolderName,
+    spriteDemoFileName,
+  } = modifiedOptions;
   return src(path.join(ICON_WITH_COLOR_DIR, "*.svg"))
     .pipe(
       imagemin([
@@ -243,10 +227,17 @@ function createSvgSprite() {
 }
 
 function moveFileToTarget() {
-  if (process.env.TARGET_FONTS_DIR) {
+  const {
+    DEFAULT_DIR,
+    TARGET_FONTS_DIR,
+    TARGET_SPRITE_DIR,
+    defaultFontsFolerName,
+    defaultSpriteFolderName,
+  } = modifiedOptions;
+  if (passedOptions.TARGET_FONTS_DIR) {
     moveFiles(path.join(DEFAULT_DIR, defaultFontsFolerName), TARGET_FONTS_DIR);
   }
-  if (process.env.TARGET_SPRITE_DIR) {
+  if (passedOptions.TARGET_SPRITE_DIR) {
     moveFiles(
       path.join(DEFAULT_DIR, defaultSpriteFolderName),
       TARGET_SPRITE_DIR
@@ -262,6 +253,7 @@ function moveFiles(srcDir, targetDir) {
   fse.removeSync(srcDir);
 }
 function minifyCss() {
+  const { TARGET_CSS_DIR, cssFileName } = modifiedOptions;
   return src(path.join(TARGET_CSS_DIR, cssFileName))
     .pipe(cleanCSS())
     .pipe(dest(TARGET_CSS_DIR));
@@ -273,11 +265,85 @@ function minifyCss() {
 //   moveFileToTarget
 // );
 
+//setting options by parameters
+function setOptions(option) {
+  // console.log("option", option);
+  const cb = {
+    defaultFolderName: option.DEFAULT_FOLDER_NAME || "g_fonts",
+    defaultCssFolderName: "css",
+    defaultFontsFolerName: "fonts",
+    defaultSpriteFolderName: "sprites",
+    defaultDemoFolderName: "demo",
+    ASSETS_DIR: resolvePath(option.ASSETS_DIR || "assets"),
+  };
+
+  cb.DEFAULT_DIR = resolvePath(cb.defaultFolderName);
+  cb.ICON_WITHOUT_COLOR_DIR = option.ICON_WITHOUT_COLOR_DIR
+    ? resolvePath(option.ICON_WITHOUT_COLOR_DIR)
+    : path.join(cb.ASSETS_DIR, "icons");
+  cb.ICON_WITH_COLOR_DIR = option.ICON_WITH_COLOR_DIR
+    ? resolvePath(option.ICON_WITH_COLOR_DIR)
+    : path.join(cb.ASSETS_DIR, "svgs");
+
+  cb.TARGET_CSS_DIR = option.TARGET_CSS_DIR
+    ? resolvePath(option.TARGET_CSS_DIR)
+    : path.join(cb.DEFAULT_DIR, cb.defaultCssFolderName);
+  cb.TARGET_FONTS_DIR = option.TARGET_FONTS_DIR
+    ? resolvePath(option.TARGET_FONTS_DIR)
+    : path.join(cb.DEFAULT_DIR, cb.defaultFontsFolerName);
+  cb.TARGET_SPRITE_DIR = option.TARGET_SPRITE_DIR
+    ? resolvePath(option.TARGET_SPRITE_DIR)
+    : path.join(cb.DEFAULT_DIR, cb.defaultSpriteFolderName);
+
+  const getCssFontsSrc = () => {
+    const cssDir =
+      option.TARGET_CSS_DIR ||
+      path.join(cb.defaultFolderName, cb.defaultCssFolderName);
+    const fontsDir =
+      option.TARGET_FONTS_DIR ||
+      path.join(cb.defaultFolderName, cb.defaultFontsFolerName);
+    const rawDirArray = cssDir.split("/");
+
+    let prevPath = "";
+    for (let i = 0; i < rawDirArray.length; i++) {
+      prevPath = prevPath + "../";
+    }
+    return `${prevPath}${fontsDir}/`;
+  };
+  cb.CSS_FONTS_SRC_DIR = getCssFontsSrc();
+
+  // names
+  cb.PREFIX = option.PREFIX || "g_fonts";
+  cb.fontName = option.FONT_NAME || `${cb.PREFIX}_icons`;
+  cb.cssClassName = option.CSS_CLASS_NAME || `${cb.PREFIX}_icons`;
+  cb.cssFileName = option.CSS_FILE_NAME || `${cb.PREFIX}_icons.css`;
+  cb.spriteFileName =
+    cb.SPRITE_FILE_NAME || `${cb.PREFIX}_color_svgs_sprite.svg`;
+  cb.fontsDemoFileName = cb.FONTS_DEMO_FILE_NAME || "fonts_demo";
+  cb.spriteDemoFileName = cb.SPRITE_DEMO_FILE_NAME || "sprites_demo.html";
+  cb.hashFileName = cb.HASH_FILE_NAME || "svg-hash.md";
+
+  cb.hashFile = path.join(cb.DEFAULT_DIR, cb.hashFileName);
+  return cb;
+}
+
+// create promise function for await series all process complete. and return the result.
+const generateFonts = function (options = {}) {
+  return new Promise((resolve) => {
+    // console.log("generateFonts-options", options);
+    passedOptions = { ...options };
+    modifiedOptions = setOptions(options);
+    series(
+      checkHashAndFile,
+      parallel(createFontsAndCss, createSvgSprite),
+      minifyCss,
+      moveFileToTarget,
+      function () {
+        resolve(true);
+      }
+    )();
+  });
+};
 module.exports = {
-  generateFonts: series(
-    checkHashAndFile,
-    parallel(createFontsAndCss, createSvgSprite),
-    minifyCss,
-    moveFileToTarget
-  )
+  generateFonts,
 };
