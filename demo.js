@@ -1,4 +1,4 @@
-const { generateFonts } = require("./src/index.js");
+const generateFonts = require("./src/index.js");
 // process.on("uncaughtException", function () {
 //   console.log("Caught exception");
 // });
@@ -28,6 +28,7 @@ const cssOptions = {
   FONT_NAME: "good_fonts",
   CSS_CLASS_NAME: "is_good_icon",
   CSS_FILE_NAME: "is_good_icon.css",
+  demo: true,
 };
 const scssOptions = {
   PREFIX: "good_fonts",
@@ -42,6 +43,10 @@ const scssOptions = {
   CSS_FILE_NAME: "is_good_icon.scss",
   DEFAULT_FOLDER_NAME: "G_G_Fonts",
 };
-generateFonts({ ...cssOptions }).then((res) => {
-  console.log("res", res);
-});
+generateFonts({ ...cssOptions })
+  .then((res) => {
+    console.log("res", res);
+  })
+  .catch((err) => {
+    console.error("err", err);
+  });
