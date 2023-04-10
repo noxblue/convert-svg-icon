@@ -342,6 +342,7 @@ const generateFonts = function (options = {}) {
         dimensions: true,
         sprite: path.join(defaultSpriteFolderName, spriteFileName),
         dest: "./",
+        inline: true,
       };
       if (demo) {
         spriteOptions.example = {

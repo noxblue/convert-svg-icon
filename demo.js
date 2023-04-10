@@ -26,8 +26,8 @@ const cssOptions = {
   TARGET_FONTS_DIR: "dist/assets/fonts",
   TARGET_SPRITE_DIR: "dist/images/sprites",
   FONT_NAME: "good_fonts",
-  CSS_CLASS_NAME: "is_good_icon",
-  CSS_FILE_NAME: "is_good_icon.css",
+  CSS_CLASS_NAME: "good_icon",
+  CSS_FILE_NAME: "good_icon.css",
   demo: true,
 };
 const scssOptions = {
@@ -38,9 +38,9 @@ const scssOptions = {
   TARGET_FONTS_DIR: "dist/assets/fonts",
   TARGET_SPRITE_DIR: "dist/images/sprites",
   FONT_NAME: "good_fonts",
-  CSS_CLASS_NAME: "is_good_icon",
+  CSS_CLASS_NAME: "good_icon",
   CSS_TEMPLATE_NAME: "_icons.scss",
-  CSS_FILE_NAME: "is_good_icon.scss",
+  CSS_FILE_NAME: "good_icon.scss",
   DEFAULT_FOLDER_NAME: "G_G_Fonts",
 };
 generateFonts({ ...cssOptions })
