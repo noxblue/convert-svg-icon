@@ -6,7 +6,8 @@
   "scripts": {
     "build": "yarn gen-fonts && yarn next",
     "gen-fonts": "node demo.js",
-    "next": "echo 'this is the next job.'"
+    "next": "echo 'this is the next job.'",
+    "demo": "webpack serve --env NODE_ENV=dev --mode=development"
   },
   "devDependencies": {
     "dotenv": "^16.0.3",
