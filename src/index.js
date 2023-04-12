@@ -48,7 +48,7 @@ const { src, series, dest, parallel } = require("gulp");
 const fs = require("fs");
 const fse = require("fs-extra");
 const path = require("path");
-const hashFiles = require("hash-files");
+const { SHA1 } = require("jshashes");
 const imagemin = require("gulp-imagemin");
 const iconfont = require("gulp-iconfont");
 const consolidate = require("gulp-consolidate");
@@ -166,6 +166,23 @@ const generateFonts = function (options = {}) {
 
       return cb;
     };
+    const getFolderHash = (folderPath) => {
+      const files = fs.readdirSync(folderPath);
+      const fileHashes = [];
+      files.forEach((file) => {
+        const filePath = `${folderPath}/${file}`;
+        if (fs.statSync(filePath).isDirectory()) {
+          const folderHash = getFolderHash(filePath);
+          fileHashes.push(folderHash);
+        } else {
+          const fileContent = fs.readFileSync(filePath);
+          const fileHash = new SHA1().hex(JSON.stringify(fileContent));
+          fileHashes.push(fileHash);
+        }
+      });
+
+      return new SHA1().hex(fileHashes.join());
+    };
 
     // Check files has change, Stop process when they are same..
     const checkHashAndFile = () => {
@@ -182,15 +199,9 @@ const generateFonts = function (options = {}) {
         spriteFileName,
         defaultFontsFolerName,
       } = modifiedOptions;
-      const fontsHash = hashFiles.sync({
-        files: `${ICON_WITHOUT_COLOR_DIR}/*/**`,
-        algorithm: "sha1",
-      });
-      const svgsHash = hashFiles.sync({
-        files: `${ICON_WITH_COLOR_DIR}/*/**`,
-        algorithm: "sha1",
-      });
-      const currentHash = fontsHash + svgsHash;
+      const fontsHash = getFolderHash(ICON_WITHOUT_COLOR_DIR);
+      const svgsHash = getFolderHash(ICON_WITH_COLOR_DIR);
+      const currentHash = new SHA1().hex(JSON.stringify(fontsHash + svgsHash));
       const prevHash = fs.existsSync(hashFile)
         ? fs.readFileSync(hashFile, "utf8")
         : "";
