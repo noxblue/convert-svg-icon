@@ -20,10 +20,10 @@ const generateFonts = require("./src/index.js");
 // });
 const cssOptions = {
   PREFIX: "good_fonts",
-  ICON_WITHOUT_COLOR_DIR: "assets/icons/pure",
-  ICON_WITH_COLOR_DIR: "assets/icons/color",
+  ICON_WITHOUT_COLOR_DIR: "assets/icons/fonts",
+  ICON_WITH_COLOR_DIR: "assets/icons/symbols",
   TARGET_CSS_DIR: "assets/css/font",
-  TARGET_FONTS_DIR: "assets/assets/fonts",
+  TARGET_FONTS_DIR: "assets/fonts",
   TARGET_SPRITE_DIR: "assets/images/sprites",
   FONT_NAME: "good_fonts",
   CSS_CLASS_NAME: "good_icon",
@@ -32,10 +32,10 @@ const cssOptions = {
 };
 const scssOptions = {
   PREFIX: "good_fonts",
-  ICON_WITHOUT_COLOR_DIR: "assets/icons/pure",
-  ICON_WITH_COLOR_DIR: "assets/icons/color",
+  ICON_WITHOUT_COLOR_DIR: "assets/icons/fonts",
+  ICON_WITH_COLOR_DIR: "assets/icons/symbols",
   TARGET_CSS_DIR: "assets/css/font",
-  TARGET_FONTS_DIR: "assets/assets/fonts",
+  TARGET_FONTS_DIR: "assets/fonts",
   TARGET_SPRITE_DIR: "assets/images/sprites",
   FONT_NAME: "good_fonts",
   CSS_CLASS_NAME: "good_icon",

@@ -112,10 +112,10 @@ const generateFonts = function (options = {}) {
       //DIRs
       cb.ICON_WITHOUT_COLOR_DIR = options.ICON_WITHOUT_COLOR_DIR
         ? resolvePath(options.ICON_WITHOUT_COLOR_DIR)
-        : path.join(cb.ASSETS_DIR, "icons");
+        : path.join(cb.ASSETS_DIR, "fonts");
       cb.ICON_WITH_COLOR_DIR = options.ICON_WITH_COLOR_DIR
         ? resolvePath(options.ICON_WITH_COLOR_DIR)
-        : path.join(cb.ASSETS_DIR, "svgs");
+        : path.join(cb.ASSETS_DIR, "symbols");
 
       cb.CSS_TEMPLATE_DIR = options.CSS_TEMPLATE_DIR
         ? resolvePath(path.join(options.CSS_TEMPLATE_DIR, cb.CSS_TEMPLATE_NAME))
