@@ -28,6 +28,7 @@ const cssOptions = {
   FONT_NAME: "good_fonts",
   CSS_CLASS_NAME: "good_icon",
   CSS_FILE_NAME: "good_icon.css",
+  DEFAULT_FOLDER_NAME: "script_demo",
   demo: true,
 };
 const scssOptions = {

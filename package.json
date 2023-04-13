@@ -1,13 +1,14 @@
 {
   "name": "use-gulp-iconfont",
   "version": "1.0.0",
-  "main": "gulpfile.js",
+  "main": "src/index.js",
   "license": "MIT",
   "scripts": {
-    "build": "yarn gen-fonts && yarn next",
+    "demo:build": "yarn gen-fonts && yarn next-job",
     "gen-fonts": "node demo.js",
-    "next": "echo 'this is the next job.'",
-    "demo": "webpack serve --env NODE_ENV=dev --mode=development"
+    "next-job": "echo 'this is the next job.'",
+    "webpack-demo:serve": "webpack serve --env NODE_ENV=dev --mode=development",
+    "webpack-demo:build": "webpack serve --env NODE_ENV=dev --mode=development"
   },
   "devDependencies": {
     "dotenv": "^16.0.3",
