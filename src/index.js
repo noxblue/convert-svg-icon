@@ -175,9 +175,11 @@ const generateFonts = function (options = {}) {
           const folderHash = getFolderHash(filePath);
           fileHashes.push(folderHash);
         } else {
-          const fileContent = fs.readFileSync(filePath);
-          const fileHash = new SHA1().hex(JSON.stringify(fileContent));
-          fileHashes.push(fileHash);
+          if (path.extname(filePath) === ".svg") {
+            const fileContent = fs.readFileSync(filePath);
+            const fileHash = new SHA1().hex(JSON.stringify(fileContent));
+            fileHashes.push(fileHash);
+          }
         }
       });
 
