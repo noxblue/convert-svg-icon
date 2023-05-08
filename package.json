@@ -4,14 +4,16 @@
   "main": "src/index.js",
   "license": "MIT",
   "scripts": {
-    "demo:build": "yarn gen-fonts && yarn next-job",
-    "gen-fonts": "node demo.js",
+    "demo:script": "yarn gen-fonts && yarn next-job",
+    "gen-fonts": "node demo/demo.js",
     "next-job": "echo 'this is the next job.'",
-    "webpack-demo:serve": "webpack serve --env NODE_ENV=dev --mode=development",
-    "webpack-demo:build": "webpack serve --env NODE_ENV=dev --mode=development"
+    "demo:serve": "webpack serve --env NODE_ENV=dev --mode=development",
+    "demo:build": "webpack serve --env NODE_ENV=dev --mode=development"
   },
   "devDependencies": {
+    "css-loader": "^6.7.3",
     "dotenv": "^16.0.3",
+    "file-loader": "^6.2.0",
     "fs-extra": "^11.1.1",
     "gulp": "^4.0.2",
     "gulp-clean-css": "^4.3.0",
@@ -20,6 +22,15 @@
     "gulp-imagemin": "7.1.0",
     "gulp-rename": "^2.0.0",
     "gulp-svg-sprite": "^2.0.3",
-    "jshashes": "^1.0.8"
+    "html-webpack-plugin": "^5.5.1",
+    "jshashes": "^1.0.8",
+    "mini-css-extract-plugin": "^2.7.5",
+    "node-sass": "^8.0.0",
+    "sass-loader": "^13.2.2",
+    "svg-sprite-loader": "^6.0.11",
+    "terser-webpack-plugin": "^5.3.8",
+    "webpack": "^5.82.0",
+    "webpack-cli": "^5.1.0",
+    "webpack-dev-server": "^4.15.0"
   }
 }

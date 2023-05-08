@@ -1,4 +1,4 @@
-const generateFonts = require("./src/index.js");
+const generateFonts = require("../src/index.js");
 // module.exports = () => {
 //   return generateFonts;
 // };

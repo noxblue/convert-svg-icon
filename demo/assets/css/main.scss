@@ -1,0 +1,81 @@
+@import "./good_fonts.scss";
+body {
+  box-sizing: border-box;
+  padding: 16px 0;
+  color: #4e4e4e;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.title {
+  font-size: 36px;
+  font-weight: bold;
+  color: black;
+}
+.sub-title {
+  font-size: 28px;
+  font-weight: bold;
+  color: black;
+}
+.file-dir {
+  font-size: 20px;
+  font-weight: 500;
+}
+.icon-font {
+  &__gruop-wrap {
+    max-width: 765px;
+    display: flex;
+    flex-wrap: wrap;
+    box-sizing: border-box;
+    padding: 36px 18px;
+    margin: 0 auto;
+  }
+  &__wrap {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    border: #4e4e4e 1px solid;
+    box-sizing: border-box;
+    padding: 12px;
+  }
+  &__icon {
+    color: #00b16d;
+    font-size: 40px;
+    display: inline-block;
+  }
+  &__name {
+    color: #00b16d;
+    font-size: 16px;
+    font-weight: 400;
+    margin: 0;
+  }
+}
+.icon-symbol {
+  &__group-wrap {
+    max-width: 765px;
+    display: flex;
+    flex-wrap: wrap;
+    box-sizing: border-box;
+    padding: 36px 18px;
+    margin: 0 auto;
+  }
+  &__wrap {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    border: #4e4e4e 1px solid;
+    box-sizing: border-box;
+    padding: 12px;
+  }
+  &__icon {
+    width: 40px;
+    height: 40px;
+  }
+  &__id {
+    color: #00b16d;
+    font-size: 16px;
+    font-weight: 400;
+    margin: 0;
+  }
+}

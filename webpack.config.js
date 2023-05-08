@@ -18,8 +18,8 @@ const config = (env, argv, customConfig) => {
     module: {
       rules: [
         {
-          test: /\.svg$/i,
-          include: /.*_sprites\.svg$/,
+          test: /\.svg$/,
+          include: [path.resolve(__dirname, "demo/assets/images/sprites")],
           use: [
             {
               loader: "svg-sprite-loader",
@@ -44,27 +44,32 @@ const config = (env, argv, customConfig) => {
       static: {
         directory: path.resolve(__dirname, "dist"),
       },
+      open: true,
+      hot: true,
       port: "8688",
     },
     // plugin啟用使用new的方式引入模組，並傳入設定值
     plugins: [
       new HtmlWebpackPlugin({
-        title: "iconfonts Demo",
+        title: `iconfont "good_fonts" Demo`,
+        fontDir: "demo/assets/fonts",
+        cssDir: "demo/assets/css",
+        spriteDir: "demo/assets/images/sprites",
         template: "./demo/template/index.html",
       }),
       new MiniCssExtractPlugin(),
       new GenerateFontsPlugin({
         PREFIX: "good_fonts",
-        ICON_WITHOUT_COLOR_DIR: "assets/icons/pure",
-        ICON_WITH_COLOR_DIR: "assets/icons/color",
-        TARGET_CSS_DIR: "assets/css/font",
-        TARGET_FONTS_DIR: "assets/assets/fonts",
-        TARGET_SPRITE_DIR: "assets/images/sprites",
+        ICON_WITHOUT_COLOR_DIR: "assets/icons/fonts",
+        ICON_WITH_COLOR_DIR: "assets/icons/symbols",
+        TARGET_CSS_DIR: "demo/assets/css",
+        TARGET_FONTS_DIR: "demo/assets/fonts",
+        TARGET_SPRITE_DIR: "demo/assets/images/sprites",
         FONT_NAME: "good_fonts",
         CSS_CLASS_NAME: "good_icon",
         CSS_TEMPLATE_NAME: "_icons.scss",
-        CSS_FILE_NAME: "good_icon.scss",
-        DEFAULT_FOLDER_NAME: "G_G_Fonts",
+        CSS_FILE_NAME: "good_fonts.scss",
+        DEFAULT_FOLDER_NAME: "demo/good_fonts",
         demo: true,
       }),
       new SpriteLoaderPlugin(),

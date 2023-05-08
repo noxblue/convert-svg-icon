@@ -58,6 +58,8 @@ const cleanCSS = require("gulp-clean-css");
 
 // create promise function for await series all process complete. and return the result.
 const generateFonts = function (options = {}) {
+  let fontsClassList = [];
+  let symbolIdsList = [];
   return new Promise((resolve, reject) => {
     // exit without code !0, for continue next node job.
     process.on("uncaughtException", function () {
@@ -295,6 +297,11 @@ const generateFonts = function (options = {}) {
         )
         .on("glyphs", function (glyphs, options) {
           if (demo) {
+            const getfontsClassList = (glyph) => {
+              return `${modifiedOptions.cssClassName}-${glyph.name}`;
+            };
+            fontsClassList = glyphs.map(getfontsClassList);
+
             // generate fonts demo html
             console.log("generate fonts demo html");
             src(HTML_DEMO_TEMPLATE_DIR)
@@ -344,6 +351,7 @@ const generateFonts = function (options = {}) {
         ICON_WITH_COLOR_DIR,
         DEFAULT_DIR,
         fontName,
+        cssClassName,
         defaultSpriteFolderName,
         spriteFileName,
         defaultDemoFolderName,
@@ -361,6 +369,20 @@ const generateFonts = function (options = {}) {
         spriteOptions.example = {
           dest: path.join(defaultDemoFolderName, spriteDemoFileName),
         };
+
+        fs.readdir(path.join(ICON_WITH_COLOR_DIR), (err, files) => {
+          if (err) {
+            console.log("get sprite ids failed.");
+          } else {
+            symbolIdsList = files.reduce((acc, file) => {
+              if (path.extname(file) === ".svg") {
+                const id = `${cssClassName}_${path.basename(file, ".svg")}`;
+                acc = [...acc, id];
+              }
+              return acc;
+            }, []);
+          }
+        });
       }
       return src(path.join(ICON_WITH_COLOR_DIR, "*.svg"))
         .pipe(
@@ -415,6 +437,7 @@ const generateFonts = function (options = {}) {
         TARGET_SPRITE_DIR,
         defaultFontsFolerName,
         defaultSpriteFolderName,
+        demo,
       } = modifiedOptions;
       if (passedOptions.TARGET_FONTS_DIR) {
         moveFiles(
@@ -428,6 +451,18 @@ const generateFonts = function (options = {}) {
           TARGET_SPRITE_DIR
         );
       }
+
+      if (demo) {
+        const namesList = JSON.stringify({
+          fontsClassList,
+          symbolIdsList,
+        });
+        fs.writeFileSync(
+          path.join(DEFAULT_DIR, "list.js"),
+          `module.exports = ${namesList}`
+        );
+      }
+
       return Promise.resolve();
     };
 
