@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-    <g fill="none" fill-rule="evenodd">
-        <g transform="translate(-132 -1745) translate(100 1681) translate(32 64)">
-            <g>
-                <path fill="currentColor" fill-rule="nonzero" d="M6.83 13.66c-.26 0-.51-.1-.71-.29L.46 7.71C.28 7.52.17 7.27.17 7c0-.27.11-.52.29-.71L6.12.63c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41L2.59 7l4.95 4.95c.39.39.39 1.02 0 1.41-.2.2-.46.3-.71.3z" transform="translate(8 5)"/>
-            </g>
-        </g>
-    </g>
-</svg>
