@@ -40,14 +40,6 @@ const config = (env, argv, customConfig) => {
         { test: /\.(png|gif|jpg)$/, use: ["file-loader"] },
       ],
     },
-    devServer: {
-      static: {
-        directory: path.resolve(__dirname, "dist"),
-      },
-      open: true,
-      hot: true,
-      port: "8688",
-    },
     // plugin啟用使用new的方式引入模組，並傳入設定值
     plugins: [
       new HtmlWebpackPlugin({
@@ -60,8 +52,8 @@ const config = (env, argv, customConfig) => {
       new MiniCssExtractPlugin(),
       new GenerateFontsPlugin({
         PREFIX: "good_fonts",
-        ICON_WITHOUT_COLOR_DIR: "assets/icons/fonts",
-        ICON_WITH_COLOR_DIR: "assets/icons/symbols",
+        ICON_WITHOUT_COLOR_DIR: "demo/assets/icons/fonts",
+        ICON_WITH_COLOR_DIR: "demo/assets/icons/symbols",
         TARGET_CSS_DIR: "demo/assets/css",
         TARGET_FONTS_DIR: "demo/assets/fonts",
         TARGET_SPRITE_DIR: "demo/assets/images/sprites",
@@ -91,6 +83,16 @@ const config = (env, argv, customConfig) => {
           terserOptions: { compress: { drop_console: env.NODE_ENV !== "dev" } },
         }),
       ],
+    },
+    devServer: {
+      static: {
+        directory: path.resolve(__dirname, "dist"),
+      },
+      historyApiFallback: true,
+      watchFiles: ["src/**/*", "demo/**/*"],
+      liveReload: true,
+      open: true,
+      port: "8688",
     },
     ...customConfig,
   };

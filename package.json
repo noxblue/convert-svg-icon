@@ -1,14 +1,24 @@
 {
-  "name": "use-gulp-iconfont",
+  "name": "convert-svg-icon",
   "version": "1.0.0",
   "main": "src/index.js",
+  "description": "Convert SVG files of icons into fonts and sprites, allowing access to icons through class names.",
   "license": "MIT",
+  "author": {
+    "name": "Charles Liu",
+    "email": "noxblue@gmail.com",
+    "url": "https://github.com/noxblue"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/noxblue/convert-svg-icon.git"
+  },
   "scripts": {
-    "demo:script": "yarn gen-fonts && yarn next-job",
-    "gen-fonts": "node demo/demo.js",
-    "next-job": "echo 'this is the next job.'",
-    "demo:serve": "webpack serve --env NODE_ENV=dev --mode=development",
-    "demo:build": "webpack serve --env NODE_ENV=dev --mode=development"
+    "gen:demo": "yarn gen:fonts && yarn echo:next-job",
+    "gen:fonts": "node demo/demo.js",
+    "echo:next-job": "echo 'This is the next job.'",
+    "serve:demo": "webpack serve --env NODE_ENV=dev --mode=development",
+    "build:demo": "webpack build --env NODE_ENV=production --mode=production"
   },
   "devDependencies": {
     "css-loader": "^6.7.3",

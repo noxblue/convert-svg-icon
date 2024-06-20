@@ -4,5 +4,9 @@
 
 node_modules/
 dist/
-g_fonts/
+demo/assets/images/
+demo/assets/fonts/
+demo/assets/css/good_fonts.css
+demo/assets/css/good_fonts.scss
+demo/good_fonts/
 .env

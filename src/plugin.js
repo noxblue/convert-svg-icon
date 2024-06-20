@@ -1,7 +1,4 @@
 const generateFonts = require("../src/index.js");
-// module.exports = () => {
-//   return generateFonts;
-// };
 
 // 透過class建立webpack plugin，透過new方式建構並執行
 module.exports = class GenerateFontsPlugin {
@@ -21,14 +18,5 @@ module.exports = class GenerateFontsPlugin {
     compiler.hooks.watchRun.tapPromise("GenerateFontsPlugin", () =>
       generateFonts(this.options)
     );
-
-    // compiler.hooks.emit.tapPromise("GenerateFontsPlugin", () =>
-    //   generateFonts(this.options)
-    // );
-    // compiler.hooks.thisCompilation.tap("GenerateFontsPlugin", compilation => {
-    //   compilation.hooks.additionalAssets.tapPromise("GenerateFontsPlugin", () =>
-    //     generateFonts(this.options)
-    //   );
-    // });
   }
 };

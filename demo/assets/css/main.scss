@@ -79,3 +79,19 @@ body {
     margin: 0;
   }
 }
+.code-example {
+  color: #00b16d;
+  padding: 16px 0;
+}
+.btn-reflash {
+  background-color: #fff;
+  color: #00b16d;
+  padding: 0.5rem 1rem;
+  border: 1px solid #00b16d;
+  border-radius: 4px;
+  cursor: pointer;
+  &:hover {
+    background-color: #00b16d;
+    color: #fff;
+  }
+}

@@ -13,9 +13,17 @@
       <p>cssDir : <%= htmlWebpackPlugin.options.cssDir %></p>
       <p>spriteDir : <%= htmlWebpackPlugin.options.spriteDir %></p>
     </div>
+    <div>use fonts or symbols icon by set classname as icon-name, like:</div>
+    <div class="code-example"><code>&lt;span class="good_icon-list"&gt;&lt;/span&gt;</code></div>
     <div class="sub-title">icon fonts</div>
     <div id="fonts"></div>
     <div class="sub-title">icon symbols</div>
     <div id="symbols"></div>
+    <div style="color: red; padding-bottom: 1rem">
+      If you did't see icons in first time generate, please reflash this page.
+    </div>
+    <button class="btn-reflash" onclick="(function(){location.reload();})()">
+      reflash
+    </button>
   </body>
 </html>

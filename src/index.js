@@ -58,9 +58,9 @@ const cleanCSS = require("gulp-clean-css");
 
 // create promise function for await series all process complete. and return the result.
 const generateFonts = function (options = {}) {
-  let fontsClassList = [];
-  let symbolIdsList = [];
   return new Promise((resolve, reject) => {
+    let fontsClassList = [];
+    let symbolIdsList = [];
     // exit without code !0, for continue next node job.
     process.on("uncaughtException", function () {
       // console.log("=== Generate of Fonts and Sprite are stopped ===");
@@ -461,8 +461,8 @@ const generateFonts = function (options = {}) {
           path.join(DEFAULT_DIR, "list.js"),
           `module.exports = ${namesList}`
         );
+        fs.writeFileSync(path.join(DEFAULT_DIR, "list.json"), namesList);
       }
-
       return Promise.resolve();
     };
 
@@ -483,15 +483,14 @@ const generateFonts = function (options = {}) {
       checkHashAndFile,
       parallel(createFontsAndCss, createSvgSprite),
       minifyCss,
-      moveFileToTarget,
-      function () {
-        resolve(true);
-      }
+      moveFileToTarget
     )((err, results) => {
       if (err) {
         console.error("err", err);
+        reject(err);
       } else {
-        console.log("results", results);
+        console.log("=== All process are completed. ===");
+        resolve(true);
       }
     });
   });
